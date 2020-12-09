@@ -37,14 +37,14 @@ impl Config {
         }
         if num_args == 2 {
             if command == "set" {
-                return Ok(Config {command: command, value: DEFAULT_SET});
+                return Ok(Config {command, value: DEFAULT_SET});
             } else {
-                return Ok(Config {command: command, value: DEFAULT_DELTA});
+                return Ok(Config {command, value: DEFAULT_DELTA});
             }
         }
         match args[2].parse::<u32>() {
             Ok(v) => if v <= 100 {
-                Ok(Config {command: command, value: v})
+                Ok(Config {command, value: v})
             } else {
                 Err("Value should be 0 - 100".to_string())
             },
@@ -58,7 +58,7 @@ impl Config {
 fn read_sysfs(path: &'static str) -> Result<u32, String> {
     match fs::read_to_string(path) {
         Err(err) => Err(format!("Couldn't read from '{}' due to '{}'", path, err)),
-        Ok(s) => s.trim_right().parse::<u32>()
+        Ok(s) => s.trim_end().parse::<u32>()
             .and_then(|v| { Ok(v) })
             .or_else(|err| { Err(format!("Couldn't parse value: '{}'", err)) }),
     }
